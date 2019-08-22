@@ -19,9 +19,11 @@ public class Manager : MonoBehaviour
     public float HeatTransfer;
     public bool DebugWind;
 
-    //public NativeHashMap<int, Entity> CellEntities;
+    //public NativeHashMap<int, Entity> TestEntities;
     [HideInInspector]
     public int CellsCount;
+
+
 
     void Start()
     {

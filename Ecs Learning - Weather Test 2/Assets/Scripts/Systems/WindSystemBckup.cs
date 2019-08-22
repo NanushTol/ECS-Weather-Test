@@ -7,7 +7,7 @@
 //using Unity.Collections;
 //using Unity.Burst;
 
-
+//[DisableAutoCreation]
 //public class WindSystem : JobComponentSystem
 //{
 //    Manager manager;
@@ -27,11 +27,11 @@
 //            // Calculate Heat Differance
 //            windData.TotalTempDifference = 0f;
 
-//            Temperature upTemp      = TempFromEntity[adjCells.Up];
-//            Temperature rightTemp   = TempFromEntity[adjCells.Right];
-//            Temperature downTemp    = TempFromEntity[adjCells.Down];
-//            Temperature leftTemp    = TempFromEntity[adjCells.Left];
-//            Temperature temp        = TempFromEntity[entity];
+//            Temperature upTemp = TempFromEntity[adjCells.Up];
+//            Temperature rightTemp = TempFromEntity[adjCells.Right];
+//            Temperature downTemp = TempFromEntity[adjCells.Down];
+//            Temperature leftTemp = TempFromEntity[adjCells.Left];
+//            Temperature temp = TempFromEntity[entity];
 
 //            windData.TempDifference[0] = temp.Value - upTemp.Value;
 //            windData.TempDifference[1] = temp.Value - rightTemp.Value;
@@ -55,7 +55,7 @@
 //            windData.DirectionAmplitude[1] = windData.TempDifference[1] - windData.TempDifference[3]; // Left Right Direction
 
 
-//            if (cell.DownCellId == -1 &&  windData.DirectionAmplitude[0] > 0) // if Bottom adjacent cell is dummy & amlitude go up
+//            if (cell.DownCellId == -1 && windData.DirectionAmplitude[0] > 0) // if Bottom adjacent cell is dummy & amlitude go up
 //            {
 //                windData.DirectionAmplitude[0] = 0;
 //            }
@@ -150,7 +150,7 @@
 //            ToTransfer down = TransferFromEntity[adjacent.Down];
 //            ToTransfer left = TransferFromEntity[adjacent.Left];
 
-//            if (right.TransferXCellId == cell.ID)       
+//            if (right.TransferXCellId == cell.ID)
 //                windData.RecivedMotionVector += right.TransferMotionVectorX;
 //            if (left.TransferXCellId == cell.ID)
 //                windData.RecivedMotionVector += left.TransferMotionVectorX;
@@ -170,7 +170,7 @@
 //        public void Execute(Entity entity, int index, ref Cell cell, ref WindData windData)
 //        {
 //            Value[index] = index + 1;
-//            ToWhoIndecies[index] = cell.RightCellId; 
+//            ToWhoIndecies[index] = cell.RightCellId;
 //        }
 //    }
 
@@ -179,7 +179,7 @@
 //        public NativeArray<int> CellsIndecies;
 //        public NativeHashMap<int, int> ToWhoIndecies;
 //        public NativeArray<float> Value;
-//        public NativeHashMap<int,float> ConsolidatedValue;
+//        public NativeHashMap<int, float> ConsolidatedValue;
 
 
 //        public void Execute(int index)
@@ -187,7 +187,7 @@
 //            int currentIdToCheck = CellsIndecies[index];
 //            float tmp = 0;
 
-//            for (int i = 0; i < CellsIndecies.Length; i++)  
+//            for (int i = 0; i < CellsIndecies.Length; i++)
 //            {
 //                if (ToWhoIndecies[i] == currentIdToCheck)
 //                    tmp += Value[i];
@@ -243,7 +243,7 @@
 
 //        ComponentDataFromEntity<ToTransfer> toTransferFromEntity = GetComponentDataFromEntity<ToTransfer>(true);
 
-//        NativeArray<float> tst = new NativeArray<float>(5,Allocator.TempJob);
+//        NativeArray<float> tst = new NativeArray<float>(5, Allocator.TempJob);
 
 //        TransferMotionVectorJob transferMotionVectorJob = new TransferMotionVectorJob
 //        {

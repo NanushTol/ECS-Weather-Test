@@ -13,18 +13,13 @@ GameObject:
   - component: {fileID: 2394483252762202911}
   - component: {fileID: 2394483252762202881}
   - component: {fileID: 2394483252762202880}
-  - component: {fileID: 2394483252762202882}
   - component: {fileID: 2394483252762202887}
-  - component: {fileID: 2394483252762202883}
-  - component: {fileID: 2394483252762202886}
-  - component: {fileID: 2394483252762202885}
   - component: {fileID: 2394483252762202884}
-  - component: {fileID: 2394483252762202907}
-  - component: {fileID: 2394483252762202892}
-  - component: {fileID: 7955371982089831464}
+  - component: {fileID: 2722201321239808981}
+  - component: {fileID: 7868678327972361173}
   - component: {fileID: 2394483252762202906}
   m_Layer: 0
-  m_Name: MasterCell
+  m_Name: TestCellReceiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -114,18 +109,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConversionMode: 0
---- !u!114 &2394483252762202882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2394483252762202910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf7b25e828f7d31419e00cb84376f9ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2394483252762202887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,46 +130,6 @@ MonoBehaviour:
     DownCellId: 0
     LeftCellId: 0
     RightCellId: 0
---- !u!114 &2394483252762202883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2394483252762202910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5e08e30e641dda46b9a675621e17f2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2394483252762202886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2394483252762202910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea6f3f6680cf01641bc2d69e9210b94c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SerializedData:
-    Value: 0
---- !u!114 &2394483252762202885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2394483252762202910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 648c96b186fc3d74b80859fc72055cb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SerializedData:
-    Value: 0
 --- !u!114 &2394483252762202884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,7 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SerializedData:
     Value: 0
---- !u!114 &2394483252762202907
+--- !u!114 &2722201321239808981
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -210,43 +153,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2394483252762202910}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df1effd7693df1e468a963305f8aab8b, type: 3}
+  m_Script: {fileID: 11500000, guid: 66e4764118ea88949a6ace5316ad24e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SerializedData:
-    Value: 0
---- !u!114 &2394483252762202892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2394483252762202910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84f057e8947c38a4287820ab0e341587, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SerializedData:
-    TotalTempDifference: 0
-    TempDifference:
-      x: 0
-      y: 0
-      z: 0
-      w: 0
-    DirectionAmplitude:
-      x: 0
-      y: 0
-    DirectionPrecentage:
-      x: 0
-      y: 0
-    MotionVector:
-      x: 0
-      y: 0
-    RecivedMotionVector:
-      x: 0
-      y: 0
---- !u!114 &7955371982089831464
+--- !u!114 &7868678327972361173
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

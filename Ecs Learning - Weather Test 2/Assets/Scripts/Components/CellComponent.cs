@@ -15,5 +15,10 @@ public struct Cell : IComponentData
     public int DownCellId;
     public int LeftCellId;
     public int RightCellId;
+
+    public Entity Up;
+    public Entity Down;
+    public Entity Left;
+    public Entity Right;
 }
 public class CellComponent : ComponentDataProxy<Cell> { }

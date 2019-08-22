@@ -8,7 +8,7 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Burst;
 
-
+//[DisableAutoCreation]
 public class CreateMediumSystem : ComponentSystem
 {
     int2 _mapSize;
@@ -89,17 +89,17 @@ public class CreateMediumSystem : ComponentSystem
         }
     }
 
-    public struct GetAdjacentEntitiesJob : IJobForEach<Cell, AdjacentCells>
+    public struct GetAdjacentEntitiesJob : IJobForEach<Cell>
     {
         [ReadOnly]
         public NativeHashMap<int, Entity> CellEntities;
 
-        public void Execute(ref Cell cell, ref AdjacentCells adjacentCells)
+        public void Execute(ref Cell cell)
         {
-            adjacentCells.Up = CellEntities[cell.UpCellId];
-            adjacentCells.Down = CellEntities[cell.DownCellId];
-            adjacentCells.Left = CellEntities[cell.LeftCellId];
-            adjacentCells.Right = CellEntities[cell.RightCellId];
+            cell.Up = CellEntities[cell.UpCellId];
+            cell.Down = CellEntities[cell.DownCellId];
+            cell.Left = CellEntities[cell.LeftCellId];
+            cell.Right = CellEntities[cell.RightCellId];
         }
     }
 
@@ -125,6 +125,9 @@ public class CreateMediumSystem : ComponentSystem
                         EntityManager.SetComponentData(cell, new Temperature { Value = 40f });
                     }
                     //UnityEngine.Random.Range(1f, 10f) 
+
+                    //EntityManager.SetComponentData(cell, new ToTransfer { });
+
                     EntityManager.SetComponentData(cell, new Translation
                     {
                         Value = new float3
