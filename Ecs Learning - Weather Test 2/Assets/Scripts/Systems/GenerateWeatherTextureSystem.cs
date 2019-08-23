@@ -4,12 +4,13 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Jobs;
+using Unity.Collections;
 using Unity.Burst;
 using UnityEngine.UI;
 
 //[DisableAutoCreation]
 [UpdateAfter(typeof(WindSystem))]
-public class GenerateWeatherTextureSystem : ComponentSystem
+public class GenerateWeatherTextureSystem : JobComponentSystem
 {
     Manager manager;
     int cellsCount;
@@ -29,27 +30,61 @@ public class GenerateWeatherTextureSystem : ComponentSystem
         display.transform.localScale = new Vector3(mapSize.x, mapSize.y, 1f);
     }
 
-    protected override void OnUpdate()
+    public struct GenerateTextureJob : IJobForEach<Cell, Temperature>
     {
-        // Create a new 2x2 texture ARGB32 (32 bit with alpha) and no mipmaps
-        var texture = new Texture2D(mapSize.x, mapSize.y, TextureFormat.ARGB32, true);
-        float value;
-        Entities.ForEach((Entity entity, ref Cell cell, ref Temperature temperature) =>
-        {
-            value = Remap(temperature.Value, 0f, 50f, 0f, 1f);
-            Color color = temperatureColors.Evaluate(value);
-            texture.SetPixel(cell.Coordinates.x, cell.Coordinates.y, color);
-        });
+        [NativeDisableParallelForRestriction]
+        public NativeHashMap<int, float> GradVal;
+        [NativeDisableParallelForRestriction]
+        public NativeHashMap<int, int2> Coordinates;
 
-        // Apply all SetPixel calls
+        public void Execute(ref Cell cell, ref Temperature temp)
+        {
+            float value;
+            value = Remap(temp.Value, -50f, 50f, 0f, 1f);
+            GradVal[cell.ID] = value;
+            Coordinates[cell.ID] = cell.Coordinates;
+        }
+        float Remap(float value, float from1, float to1, float from2, float to2)
+        {
+            return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+        }
+    }
+
+    protected override JobHandle OnUpdate(JobHandle inputDeps)
+    {
+        var texture = new Texture2D(mapSize.x, mapSize.y, TextureFormat.ARGB32, true);
+        NativeHashMap<int, float> gradVal = new NativeHashMap<int, float>(mapSize.x * mapSize.y, Allocator.TempJob);
+        NativeHashMap<int, int2> coordinates = new NativeHashMap<int, int2>(mapSize.x * mapSize.y, Allocator.TempJob);
+
+        for (int i = 0; i < mapSize.x * mapSize.y; i++)
+        {
+            gradVal.TryAdd(i, 0f);
+            coordinates.TryAdd(i, new int2(0, 0));
+        }
+
+        GenerateTextureJob generateTextureJob = new GenerateTextureJob
+        {
+            GradVal = gradVal,
+            Coordinates = coordinates
+        };
+        JobHandle generateTextureJobHandle = generateTextureJob.Schedule(this, inputDeps);
+
+        generateTextureJobHandle.Complete();
+
+        for (int i = 0; i < mapSize.x * mapSize.y; i++)
+        {
+            Color color = temperatureColors.Evaluate(gradVal[i]);
+            texture.SetPixel(coordinates[i].x, coordinates[i].y, color);
+        }
+
+        //Apply all SetPixel calls
         texture.Apply();
 
         // connect texture to material of GameObject this script is attached to
         weatherMat.mainTexture = texture;
-    }
 
-    float Remap(float value, float from1, float to1, float from2, float to2)
-    {
-        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+        gradVal.Dispose();
+        coordinates.Dispose();
+        return generateTextureJobHandle;
     }
 }

@@ -43,7 +43,7 @@ public class WindSystem : JobComponentSystem
 
             for (int i = 0; i < 4; i++)
             {
-                windData.TotalTempDifference += windData.TempDifference[i];
+                windData.TotalTempDifference += math.abs(windData.TempDifference[i]);
             }
 
             if (cell.ID == 44 || cell.ID == 53 || cell.ID == 54 || cell.ID == 55 || cell.ID == 64)
@@ -111,17 +111,6 @@ public class WindSystem : JobComponentSystem
     [BurstCompile]
     public struct PopulateHash : IJobForEach<Cell, WindData, Water, Co2, Oxygen, Temperature>
     {
-        //[NativeDisableParallelForRestriction]
-        //public NativeHashMap<int, float2> TransferMV;
-        //[NativeDisableParallelForRestriction]
-        //public NativeHashMap<int, float> WaterTransfer;
-        //[NativeDisableParallelForRestriction]
-        //public NativeHashMap<int, float> Co2Transfer;
-        //[NativeDisableParallelForRestriction]
-        //public NativeHashMap<int, float> OxyTransfer;
-        //[NativeDisableParallelForRestriction]
-        //public NativeHashMap<int, float> TempTransfer;
-
         [NativeDisableParallelForRestriction]
         public NativeHashMap<int, float> WaterContent;
         [NativeDisableParallelForRestriction]
@@ -174,7 +163,10 @@ public class WindSystem : JobComponentSystem
         public void Execute(ref Cell cell, ref WindData windData, ref Water water, ref Co2 co2, ref Oxygen oxy, ref Temperature temp)
         {
             // check give or recive by sign of the bigger: - recive, + give
+            if (cell.ID == 43)  
+            {
 
+            }
             if (math.abs(windData.TempDifference[0]) > math.abs(windData.TempDifference[2])) // Interact with top cell
             {
                 if (windData.TempDifference[0] > 0) // give
@@ -229,13 +221,21 @@ public class WindSystem : JobComponentSystem
 
             if (adjacentId != -1)
             {
-                if (cellId == 42)
+                if (cellId == 43)
                 {
 
                 }
                 float transfer;
-
-                float cont = TempContent[adjacentId];
+                float cont;
+                if (TempContent[adjacentId] == 0)   
+                {
+                    cont = 0.001f;
+                }
+                else
+                {
+                    cont = TempContent[adjacentId];
+                }
+                
 
                 transfer = motionAxisValue / cont * HeatTransferRatio;
 
@@ -245,6 +245,7 @@ public class WindSystem : JobComponentSystem
                 temp.Value += transfer;
 
                 //Transfer To Adjacent Cell
+                receivedElement.cellID = cellId;
                 receivedElement.TemperatureReceived = -transfer;
                 buffer.Add(receivedElement);
             }
@@ -346,7 +347,9 @@ public class WindSystem : JobComponentSystem
             }
             for (int i = 0; i < bufferElement.Length; i++) 
             {
+                int tmp;
                 Received content = bufferElement[i];
+                tmp = content.cellID;
                 water.Value += content.WaterReceived;
                 co2.Value += content.Co2Received;
                 oxy.Value += content.OxyReceived;
@@ -434,12 +437,6 @@ public class WindSystem : JobComponentSystem
         }
 
 
-        //NativeHashMap<int, float2>  transferMV      = new NativeHashMap<int, float2>(cellsCount ,Allocator.TempJob);
-        //NativeHashMap<int, float>   waterTransfer   = new NativeHashMap<int, float> (cellsCount, Allocator.TempJob);
-        //NativeHashMap<int, float>   co2Transfer     = new NativeHashMap<int, float> (cellsCount, Allocator.TempJob);
-        //NativeHashMap<int, float>   oxyTransfer     = new NativeHashMap<int, float> (cellsCount, Allocator.TempJob);
-        //NativeHashMap<int, float>   tempTransfer    = new NativeHashMap<int, float> (cellsCount, Allocator.TempJob);
-
         NativeHashMap<int, float> waterContent = new NativeHashMap<int, float>(cellsCount, Allocator.TempJob);
         NativeHashMap<int, float> co2Content = new NativeHashMap<int, float>(cellsCount, Allocator.TempJob);
         NativeHashMap<int, float> oxyContent = new NativeHashMap<int, float>(cellsCount, Allocator.TempJob);
@@ -516,11 +513,6 @@ public class WindSystem : JobComponentSystem
 
         PullContent pullContentJob = new PullContent
         {
-            //WaterTransfer = waterTransfer,
-            //Co2Transfer = co2Transfer,
-            //OxyTransfer = oxyTransfer,
-            //TempContent = tempContent
-
             ReceivedBufferComponentLookup = receivedBufferComponent
         };
         JobHandle pullContentHandle;
@@ -532,6 +524,7 @@ public class WindSystem : JobComponentSystem
         {
             pullContentHandle = pullContentJob.Schedule(this, transferMotionVectorHandle);
         }
+
 
 
         transferCellContentHandle.Complete();

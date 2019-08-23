@@ -14,6 +14,7 @@ public class Manager : MonoBehaviour
     public Gradient TemperatureColors;
     public GameObject Display;
 
+
     [Header("Wind Settings")]
     public float Drag;
     public float HeatTransfer;

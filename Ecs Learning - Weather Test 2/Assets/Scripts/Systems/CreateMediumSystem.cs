@@ -119,10 +119,10 @@ public class CreateMediumSystem : ComponentSystem
                     EntityManager.SetComponentData(cell, new Water { Value = 0 });
                     EntityManager.SetComponentData(cell, new Co2 { Value = 0 });
                     EntityManager.SetComponentData(cell, new Oxygen { Value = 0 });
-                    EntityManager.SetComponentData(cell, new Temperature { Value = 0});
+                    EntityManager.SetComponentData(cell, new Temperature { Value = 20f});
                     if(x == _mapSize.x / 2 && y == _mapSize.y / 2)
                     {
-                        EntityManager.SetComponentData(cell, new Temperature { Value = 40f });
+                        EntityManager.SetComponentData(cell, new Temperature { Value = 100f });
                     }
                     //UnityEngine.Random.Range(1f, 10f) 
 

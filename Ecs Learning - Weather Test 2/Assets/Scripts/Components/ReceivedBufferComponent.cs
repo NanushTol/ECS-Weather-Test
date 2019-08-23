@@ -15,5 +15,7 @@ public struct Received : IBufferElementData
     public float TemperatureReceived;
 
     public float2 MVReceived;
+
+    public int cellID;
 }
 public class ReceivedBufferComponent : DynamicBufferProxy<Received> { }

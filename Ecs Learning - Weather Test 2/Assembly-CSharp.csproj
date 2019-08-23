@@ -80,6 +80,7 @@
     <Compile Include="Assets\Scripts\Systems\GenerateWeatherTextureSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\PushSystemTest.cs" />
     <Compile Include="Assets\Scripts\Systems\testInitiate.cs" />
+    <Compile Include="Assets\Scripts\Systems\WeatherViewSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\WindSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\WindSystemBckup.cs" />
     <None Include="Assets\ScriptTemplates\81a-C# Ecs System-New_ECS_System.cs.txt" />
