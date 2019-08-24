@@ -18,6 +18,15 @@ public class GenerateWeatherTextureSystem : JobComponentSystem
     Material weatherMat;
     Gradient temperatureColors;
     GameObject display;
+    Texture2D texture;
+    NativeArray<Color> colorLookup; // size 256 
+    //Vector4[] colorLookup; // size 256 
+
+
+    protected override void OnCreate()
+    {
+        
+    }
 
     protected override void OnStartRunning()
     {
@@ -28,9 +37,21 @@ public class GenerateWeatherTextureSystem : JobComponentSystem
         temperatureColors = manager.TemperatureColors;
         display = manager.Display;
         display.transform.localScale = new Vector3(mapSize.x, mapSize.y, 1f);
+
+        colorLookup = new NativeArray<Color>(256, Allocator.Persistent);
+        //colorLookup = new Vector4[256];
+
+        for (int i = 0; i < 256; i++)
+        {
+            float val = i / 256.00f;
+            Color c = temperatureColors.Evaluate(val);
+
+            colorLookup[i] = new Color(c.r, c.g, c.b, 1f);
+        }
     }
 
-    public struct GenerateTextureJob : IJobForEach<Cell, Temperature>
+    [BurstCompile]
+    public struct RemapValue : IJobForEach<Cell, Temperature>
     {
         [NativeDisableParallelForRestriction]
         public NativeHashMap<int, float> GradVal;
@@ -40,7 +61,7 @@ public class GenerateWeatherTextureSystem : JobComponentSystem
         public void Execute(ref Cell cell, ref Temperature temp)
         {
             float value;
-            value = Remap(temp.Value, -50f, 50f, 0f, 1f);
+            value = Remap(temp.Value, -50f, 50f, 0f, 1);
             GradVal[cell.ID] = value;
             Coordinates[cell.ID] = cell.Coordinates;
         }
@@ -49,10 +70,31 @@ public class GenerateWeatherTextureSystem : JobComponentSystem
             return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
         }
     }
+    [BurstCompile]
+    public struct EvaluateGradient : IJobForEachWithEntity<Cell>
+    {
+        [ReadOnly]
+        public NativeHashMap<int, float> GradVal;
+        [NativeDisableParallelForRestriction]
+        public NativeArray<Color> Data;
+        [ReadOnly]
+        public NativeArray<Color> ColorLookup;
+        [ReadOnly]
+        public float2 MapSize;
+
+        public void Execute(Entity entity, int index, ref Cell cell)
+        {
+            int val = math.clamp((int)(GradVal[index] * 255), 0, 255);
+            Color color = ColorLookup[val];
+            Data[index] = color;
+        }
+    }
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        var texture = new Texture2D(mapSize.x, mapSize.y, TextureFormat.ARGB32, true);
+        texture = new Texture2D(mapSize.x, mapSize.y, TextureFormat.RGBAFloat, true);
+        display.GetComponent<Renderer>().material.mainTexture = texture;
+
         NativeHashMap<int, float> gradVal = new NativeHashMap<int, float>(mapSize.x * mapSize.y, Allocator.TempJob);
         NativeHashMap<int, int2> coordinates = new NativeHashMap<int, int2>(mapSize.x * mapSize.y, Allocator.TempJob);
 
@@ -62,29 +104,46 @@ public class GenerateWeatherTextureSystem : JobComponentSystem
             coordinates.TryAdd(i, new int2(0, 0));
         }
 
-        GenerateTextureJob generateTextureJob = new GenerateTextureJob
+        RemapValue generateTextureJob = new RemapValue
         {
             GradVal = gradVal,
             Coordinates = coordinates
         };
         JobHandle generateTextureJobHandle = generateTextureJob.Schedule(this, inputDeps);
 
-        generateTextureJobHandle.Complete();
+        // RGBA32 texture format data layout exactly matches Color32 struct
+        var data = texture.GetRawTextureData<Color>();
 
-        for (int i = 0; i < mapSize.x * mapSize.y; i++)
+        EvaluateGradient evaluateGradient = new EvaluateGradient
         {
-            Color color = temperatureColors.Evaluate(gradVal[i]);
-            texture.SetPixel(coordinates[i].x, coordinates[i].y, color);
-        }
+            GradVal = gradVal,
+            Data = data,
+            ColorLookup = colorLookup,
+            MapSize = mapSize
+        };
+        JobHandle evaluateGradientHandle = evaluateGradient.Schedule(this, generateTextureJobHandle);
 
-        //Apply all SetPixel calls
+        //for (int i = 0; i < mapSize.x * mapSize.y; i++) 
+        //{
+        //    int val = math.clamp((int)(gradVal[i] * 255), 0, 255);
+        //    Color color = colorLookup[val];
+        //    data[i] = color;
+        //}
+
+        evaluateGradientHandle.Complete();
+
+
+        // upload to the GPU
         texture.Apply();
 
-        // connect texture to material of GameObject this script is attached to
-        weatherMat.mainTexture = texture;
-
+        //data.Dispose();
         gradVal.Dispose();
         coordinates.Dispose();
-        return generateTextureJobHandle;
+        return evaluateGradientHandle;
+    }
+
+    protected override void OnStopRunning()
+    {
+        colorLookup.Dispose();
     }
 }

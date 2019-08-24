@@ -316,35 +316,17 @@ public class WindSystem : JobComponentSystem
                 receivedElement.MVReceived = passedMV * cellTransferRatio.y;
                 buffer.Add(receivedElement);
             }
-
-            if (cell.ID == 44 || cell.ID == 53 || cell.ID == 54 || cell.ID == 55 || cell.ID == 64)
-            {
-
-            }
         }
     }
     [BurstCompile]
     public struct PullContent : IJobForEachWithEntity<Cell, Water, Co2, Oxygen, Temperature, WindData>
     {
-        //[ReadOnly]
-        //public NativeHashMap<int, float> WaterTransfer;
-        //[ReadOnly]
-        //public NativeHashMap<int, float> Co2Transfer;
-        //[ReadOnly]
-        //public NativeHashMap<int, float> OxyTransfer;
-        //[ReadOnly]
-        //public NativeHashMap<int, float> TempContent;
         [ReadOnly]
         public BufferFromEntity<Received> ReceivedBufferComponentLookup;
-
 
         public void Execute(Entity entity, int index, ref Cell cell, ref Water water, ref Co2 co2, ref Oxygen oxy, ref Temperature temp, ref WindData wind)
         {
             DynamicBuffer<Received> bufferElement = ReceivedBufferComponentLookup[entity];
-            if (cell.ID == 42)
-            {
-
-            }
             for (int i = 0; i < bufferElement.Length; i++) 
             {
                 int tmp;
@@ -357,11 +339,6 @@ public class WindSystem : JobComponentSystem
                 wind.RecivedMotionVector += content.MVReceived;
             }
             bufferElement.Clear();
-
-            if (cell.ID == 44 || cell.ID == 53 || cell.ID == 54 || cell.ID == 55 || cell.ID == 64)
-            {
-
-            }
         }
     }
     [BurstCompile]
