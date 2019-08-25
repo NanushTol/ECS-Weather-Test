@@ -14,6 +14,8 @@ public class Manager : MonoBehaviour
     public Gradient TemperatureColors;
     public GameObject Display;
     public GameObject Floor;
+    public ParticleSystem Particles;
+    public ParticleSystemForceField ParticlesFF;
 
 
     [Header("Wind Settings")]
@@ -30,6 +32,8 @@ public class Manager : MonoBehaviour
     void Start()
     {
         Floor.transform.localScale = new Vector3(MapWidth / 10, 1, MapHeight / 10);
+        var shape = Particles.shape;
+        shape.scale = new Vector3(MapWidth, 0, MapHeight);
     }
 
     void Update()

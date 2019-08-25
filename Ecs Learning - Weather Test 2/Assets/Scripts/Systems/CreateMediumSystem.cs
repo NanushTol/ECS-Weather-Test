@@ -48,6 +48,8 @@ public class CreateMediumSystem : ComponentSystem
         //CellEntities.Dispose();
     }
 
+    [ExcludeComponent(typeof(DummyCell))]
+    [BurstCompile]
     public struct GetAdjacentCellIDJob : IJobForEach<Cell, Translation>
     {
         public int2 MapSize;
@@ -89,6 +91,8 @@ public class CreateMediumSystem : ComponentSystem
         }
     }
 
+    [ExcludeComponent(typeof(DummyCell))]
+    [BurstCompile]
     public struct GetAdjacentEntitiesJob : IJobForEach<Cell>
     {
         [ReadOnly]
@@ -122,7 +126,7 @@ public class CreateMediumSystem : ComponentSystem
                     EntityManager.SetComponentData(cell, new Temperature { Value = 20f});
                     if(x == _mapSize.x / 2 && y == _mapSize.y / 2)
                     {
-                        EntityManager.SetComponentData(cell, new Temperature { Value = 100f });
+                        EntityManager.SetComponentData(cell, new Temperature { Value = -30f });
                     }
 
                     EntityManager.SetComponentData(cell, new Translation
@@ -144,7 +148,7 @@ public class CreateMediumSystem : ComponentSystem
             var dummy = EntityManager.Instantiate(entity);
             EntityManager.AddComponentData(dummy, new DummyCell { ID = -1 });
             EntityManager.RemoveComponent(dummy, typeof(MasterCell));
-            EntityManager.RemoveComponent(dummy, typeof(Cell));
+            //EntityManager.RemoveComponent(dummy, typeof(Cell));
             EntityManager.SetComponentData(dummy, new Translation
             {
                 Value = new float3

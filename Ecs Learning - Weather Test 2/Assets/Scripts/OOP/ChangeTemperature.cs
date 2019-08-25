@@ -1,23 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
+using Unity.Jobs;
+using Unity.Collections;
+using Unity.Burst;
 
-public class ChangeTemperature : MonoBehaviour
+
+public class ChangeTemperature : ComponentSystem
 {
     public Vector3 MouseClickPosition;
     public bool AddTemp;
     public bool RemoveTemp;
     public GameObject Heater;
     public GameObject Coller;
+    EntityArchetype tempChanger;
 
-    // Start is called before the first frame update
-    void Start()
+    protected override void OnStartRunning()
     {
-        
+        tempChanger = EntityManager.CreateArchetype(typeof(Heater), typeof(Translation));
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void OnUpdate()
     {
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
         {
@@ -25,7 +31,11 @@ public class ChangeTemperature : MonoBehaviour
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
-                Instantiate(Heater, hit.point, Quaternion.identity);
+            {
+                var heater = EntityManager.CreateEntity(tempChanger);
+                EntityManager.SetComponentData(heater, new Translation { Value = hit.point });
+                EntityManager.SetComponentData(heater, new Heater { TempValue = 2f });
+            }
         }
         if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1))
         {
@@ -33,7 +43,11 @@ public class ChangeTemperature : MonoBehaviour
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
-                Instantiate(Coller, hit.point, Quaternion.identity);
+            {
+                var coller = EntityManager.CreateEntity(tempChanger);
+                EntityManager.SetComponentData(coller, new Translation { Value = hit.point });
+                EntityManager.SetComponentData(coller, new Heater { TempValue = -2f });
+            }
         }
     }
 }
