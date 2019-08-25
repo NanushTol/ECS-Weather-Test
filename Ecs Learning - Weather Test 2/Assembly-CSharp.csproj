@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\Components\CellComponent.cs" />
     <Compile Include="Assets\Scripts\Components\Co2Component.cs" />
     <Compile Include="Assets\Scripts\Components\DummyCellComponent.cs" />
+    <Compile Include="Assets\Scripts\Components\HeaterComponent.cs" />
     <Compile Include="Assets\Scripts\Components\MasterCellComponent.cs" />
     <Compile Include="Assets\Scripts\Components\OxygenComponent.cs" />
     <Compile Include="Assets\Scripts\Components\ReceivedBufferComponent.cs" />
@@ -75,7 +76,9 @@
     <Compile Include="Assets\Scripts\Components\ToTransferComponent.cs" />
     <Compile Include="Assets\Scripts\Components\WaterComponent.cs" />
     <Compile Include="Assets\Scripts\Components\WindDataComponent.cs" />
-    <Compile Include="Assets\Scripts\Manager.cs" />
+    <Compile Include="Assets\Scripts\HeaterAuthor.cs" />
+    <Compile Include="Assets\Scripts\OOP\ChangeTemperature.cs" />
+    <Compile Include="Assets\Scripts\OOP\Manager.cs" />
     <Compile Include="Assets\Scripts\Systems\CreateMediumSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\GenerateWeatherTextureSystem.cs" />
     <Compile Include="Assets\Scripts\Systems\PushSystemTest.cs" />
@@ -88,8 +91,35 @@
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.PackageManagerUI.Editor">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.CollabProxy.Editor">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.DataPrivacy">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Burst">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Editor">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics.Editor">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Entities.Properties">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Entities.Properties.dll</HintPath>
@@ -106,9 +136,6 @@
     <Reference Include="Unity.Entities.StaticTypeRegistry">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Entities.StaticTypeRegistry.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Burst.Editor">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Collections">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
     </Reference>
@@ -118,35 +145,17 @@
     <Reference Include="Unity.Scenes.Editor">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Scenes.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Mathematics.Extensions">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Mathematics.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics.Extensions.Hybrid">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Mathematics.Extensions.Hybrid.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rendering.Hybrid">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Rendering.Hybrid.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Entities.BuildUtils">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Entities.BuildUtils.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Entities.Hybrid">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Entities.Hybrid.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Properties">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Properties.dll</HintPath>
@@ -160,17 +169,11 @@
     <Reference Include="Unity.Transforms.Editor">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Transforms.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Mathematics.Editor">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.DataPrivacy">
-      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Transforms.Hybrid">
       <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Transforms.Hybrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Rendering.Hybrid">
+      <HintPath>D:/Projects 2019/My Games/Learnign/ECS-Weather-Test/Ecs Learning - Weather Test 2/Library/ScriptAssemblies/Unity.Rendering.Hybrid.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.4f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

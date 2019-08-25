@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
+using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Jobs;
 using Unity.Collections;
@@ -17,6 +18,8 @@ public class WindSystem : JobComponentSystem
     float heatTransferRatio;
     bool debug;
     BufferFromEntity<Received> receivedBufferComponent;
+    NativeHashMap<int, Entity> cellEntities;
+    BeginInitializationEntityCommandBufferSystem entityCommandBufferSystem;
 
 
     [BurstCompile]
@@ -44,11 +47,6 @@ public class WindSystem : JobComponentSystem
             for (int i = 0; i < 4; i++)
             {
                 windData.TotalTempDifference += math.abs(windData.TempDifference[i]);
-            }
-
-            if (cell.ID == 44 || cell.ID == 53 || cell.ID == 54 || cell.ID == 55 || cell.ID == 64)
-            {
-
             }
         }
 
@@ -81,11 +79,6 @@ public class WindSystem : JobComponentSystem
             {
                 if (windData.DirectionPrecentage[i] != windData.DirectionPrecentage[i]) windData.DirectionPrecentage[i] = 0; // if precentage = NaN
             }
-
-            if (cell.ID == 44 || cell.ID == 53 || cell.ID == 54 || cell.ID == 55 || cell.ID == 64)
-            {
-
-            }
         }
     }
     [BurstCompile]
@@ -99,11 +92,6 @@ public class WindSystem : JobComponentSystem
             float2 newMotionVector = new float2(windData.DirectionPrecentage[1] * differenceAvrage, windData.DirectionPrecentage[0] * differenceAvrage);
 
             windData.MotionVector = newMotionVector + windData.RecivedMotionVector;
-
-            if (cell.ID == 44 || cell.ID == 53 || cell.ID == 54 || cell.ID == 55 || cell.ID == 64)
-            {
-
-            }
 
             windData.RecivedMotionVector = new float2(0f, 0f);
         }
@@ -120,23 +108,43 @@ public class WindSystem : JobComponentSystem
         [NativeDisableParallelForRestriction]
         public NativeHashMap<int, float> TempContent;
 
-        public void Execute(ref Cell cell, ref WindData wind, ref Water water, ref Co2 co2, ref Oxygen oxy, ref Temperature temp)
+        public void Execute([ReadOnly]ref Cell cell, [ReadOnly]ref WindData wind, [ReadOnly]ref Water water, 
+                            [ReadOnly]ref Co2 co2, [ReadOnly]ref Oxygen oxy, [ReadOnly]ref Temperature temp)
         {
-            //TransferMV.TryAdd(cell.ID, new float2(0, 0));
-            //WaterTransfer.TryAdd(cell.ID, 0);
-            //Co2Transfer.TryAdd(cell.ID, 0);
-            //OxyTransfer.TryAdd(cell.ID, 0);
-            //TempTransfer.TryAdd(cell.ID, 0);
-
             WaterContent.TryAdd(cell.ID, water.Value);
             Co2Content.TryAdd(cell.ID, co2.Value);
             OxyContent.TryAdd(cell.ID, oxy.Value);
             TempContent.TryAdd(cell.ID, temp.Value);
+        }
+    }
+    [BurstCompile]
+    public struct ReciveFromObjects : IJobForEachWithEntity<Heater, Translation>
+    {
+        [NativeDisableParallelForRestriction]
+        public BufferFromEntity<Received> ReceivedBufferComponentLookup;
+        [ReadOnly]
+        public NativeHashMap<int, Entity> CellEntities;
+        [ReadOnly]
+        public int2 MapSize;
 
-            if (cell.ID == 44 || cell.ID == 53 || cell.ID == 54 || cell.ID == 55 || cell.ID == 64)
-            {
+        public EntityCommandBuffer.Concurrent CommandBuffer;
 
-            }
+        public void Execute(Entity entity, int index, ref Heater heater, ref Translation translation)
+        {
+            int2 position = new int2((int)translation.Value.x, (int)translation.Value.z);
+            int2 mapCenter = new int2(MapSize.x / 2, MapSize.y / 2);
+
+            int cellId = MapSize.x * (position.y + mapCenter.y) + (position.x + mapCenter.x);
+            Entity cellEntity = CellEntities[cellId];
+
+            var buffer = ReceivedBufferComponentLookup[cellEntity];
+            Received receivedElement = new Received();
+
+            receivedElement.TemperatureReceived = heater.TempValue;
+
+            buffer.Add(receivedElement);
+
+            CommandBuffer.DestroyEntity(index, entity);
         }
     }
     [BurstCompile]
@@ -153,20 +161,14 @@ public class WindSystem : JobComponentSystem
         public NativeHashMap<int, float> Co2Content;
         [ReadOnly]
         public NativeHashMap<int, float> OxyContent;
-        //[NativeDisableParallelForRestriction]
         [ReadOnly]
         public NativeHashMap<int, float> TempContent;
-
         [ReadOnly]
         public float HeatTransferRatio;
 
         public void Execute(ref Cell cell, ref WindData windData, ref Water water, ref Co2 co2, ref Oxygen oxy, ref Temperature temp)
         {
             // check give or recive by sign of the bigger: - recive, + give
-            if (cell.ID == 43)  
-            {
-
-            }
             if (math.abs(windData.TempDifference[0]) > math.abs(windData.TempDifference[2])) // Interact with top cell
             {
                 if (windData.TempDifference[0] > 0) // give
@@ -221,10 +223,6 @@ public class WindSystem : JobComponentSystem
 
             if (adjacentId != -1)
             {
-                if (cellId == 43)
-                {
-
-                }
                 float transfer;
                 float cont;
                 if (TempContent[adjacentId] == 0)   
@@ -235,7 +233,6 @@ public class WindSystem : JobComponentSystem
                 {
                     cont = TempContent[adjacentId];
                 }
-                
 
                 transfer = motionAxisValue / cont * HeatTransferRatio;
 
@@ -256,9 +253,6 @@ public class WindSystem : JobComponentSystem
     {
         public float Dt;
         public float Drag;
-
-        //[NativeDisableParallelForRestriction]
-        //public NativeHashMap<int, float2> TransferMV;
 
         [NativeDisableParallelForRestriction]
         public BufferFromEntity<Received> ReceivedBufferComponentLookup;
@@ -354,11 +348,14 @@ public class WindSystem : JobComponentSystem
 
     protected override void OnCreate()
     {
+        entityCommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
 
     protected override void OnStartRunning()
     {
         manager = GameObject.Find("Manager").GetComponent<Manager>();
+        cellEntities = World.Active.GetExistingSystem<CreateMediumSystem>().CellEntities;
+
         cellsCount = manager.CellsCount;
         drag = manager.Drag;
         heatTransferRatio = manager.HeatTransfer;
@@ -420,38 +417,27 @@ public class WindSystem : JobComponentSystem
         NativeHashMap<int, float> tempContent = new NativeHashMap<int, float>(cellsCount, Allocator.TempJob);
 
 
-        PopulateHash populateTransferHash = new PopulateHash
+        PopulateHash populateHash = new PopulateHash
         {
-            //TransferMV = transferMV,
-            //WaterTransfer = waterTransfer,
-            //Co2Transfer = co2Transfer,
-            //OxyTransfer = oxyTransfer,
-            //TempTransfer = tempTransfer,
-
             WaterContent = waterContent,
             Co2Content = co2Content,
             OxyContent = oxyContent,
             TempContent = tempContent
         };
-        JobHandle populateTransferHashHandle;
+        JobHandle populateHashHandle;
         if (debug)
         {
-            populateTransferHashHandle = populateTransferHash.Run(this, calculateMotionVectorHandle);
+            populateHashHandle = populateHash.Run(this, calculateMotionVectorHandle);
         }
         else
         {
-            populateTransferHashHandle = populateTransferHash.ScheduleSingle(this, calculateMotionVectorHandle);
+            populateHashHandle = populateHash.ScheduleSingle(this, calculateMotionVectorHandle);
         }
-        populateTransferHashHandle.Complete();
-
+        populateHashHandle.Complete();
 
         TransferCellContent transferCellContentJob = new TransferCellContent
         {
             Dt = Time.deltaTime,
-            //WaterTransfer = waterTransfer,
-            //Co2Transfer = co2Transfer,
-            //OxyTransfer = oxyTransfer,
-            //TempTransfer = tempTransfer,
             ReceivedBufferComponentLookup = receivedBufferComponent,
 
             WaterContent = waterContent,
@@ -464,11 +450,11 @@ public class WindSystem : JobComponentSystem
         JobHandle transferCellContentHandle;
         if (debug)
         {
-            transferCellContentHandle = transferCellContentJob.Run(this, populateTransferHashHandle);
+            transferCellContentHandle = transferCellContentJob.Run(this, populateHashHandle);
         }
         else
         {
-            transferCellContentHandle = transferCellContentJob.Schedule(this, populateTransferHashHandle);
+            transferCellContentHandle = transferCellContentJob.Schedule(this, populateHashHandle);
         }
 
         TransferMotionVectorJob transferMotionVectorJob = new TransferMotionVectorJob
@@ -476,7 +462,6 @@ public class WindSystem : JobComponentSystem
             Dt = Time.deltaTime,
             Drag = drag,
             ReceivedBufferComponentLookup = receivedBufferComponent
-            //TransferMV = transferMV
         };
         JobHandle transferMotionVectorHandle;
         if (debug)
@@ -488,6 +473,16 @@ public class WindSystem : JobComponentSystem
             transferMotionVectorHandle = transferMotionVectorJob.Schedule(this, transferCellContentHandle);
         }
 
+        ReciveFromObjects reciveFromObjects = new ReciveFromObjects
+        {
+            CellEntities = cellEntities,
+            MapSize = new int2(manager.MapWidth, manager.MapHeight),
+            ReceivedBufferComponentLookup = receivedBufferComponent,
+            CommandBuffer = entityCommandBufferSystem.CreateCommandBuffer().ToConcurrent()
+        };
+        JobHandle reciveFromObjectsHandle = reciveFromObjects.Schedule(this, transferMotionVectorHandle);
+
+
         PullContent pullContentJob = new PullContent
         {
             ReceivedBufferComponentLookup = receivedBufferComponent
@@ -495,42 +490,22 @@ public class WindSystem : JobComponentSystem
         JobHandle pullContentHandle;
         if (debug)
         {
-            pullContentHandle = pullContentJob.Run(this, transferMotionVectorHandle);
+            pullContentHandle = pullContentJob.Run(this, reciveFromObjectsHandle);
         }
         else
         {
-            pullContentHandle = pullContentJob.Schedule(this, transferMotionVectorHandle);
+            pullContentHandle = pullContentJob.Schedule(this, reciveFromObjectsHandle);
         }
 
 
-
         transferCellContentHandle.Complete();
+
+        entityCommandBufferSystem.AddJobHandleForProducer(reciveFromObjectsHandle);
 
         waterContent.Dispose();
         co2Content.Dispose();
         oxyContent.Dispose();
         tempContent.Dispose();
-        //PullMotionVector pullMotionVector = new PullMotionVector
-        //{
-        //    TransferMV = transferMV
-        //};
-        //JobHandle pullMotionVectorHandle;
-        //if (debug)
-        //{
-        //    pullMotionVectorHandle = pullMotionVector.Run(this, transferMotionVectorHandle);
-        //}
-        //else
-        //{
-        //    pullMotionVectorHandle = pullMotionVector.Schedule(this, transferMotionVectorHandle);
-        //}
-
-        //pullMotionVectorHandle.Complete();
-        //transferMV.Dispose();
-        //waterTransfer.Dispose();
-        //co2Transfer.Dispose();
-        //oxyTransfer.Dispose();
-        //tempTransfer.Dispose();
-
 
         return pullContentHandle;
     }

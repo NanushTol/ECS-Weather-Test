@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 16
-  productGUID: 8188a0c06475a524aaed1216662aa591
+  productGUID: fef801721109a064fb9b7b4815a92d3f
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -65,7 +65,7 @@ PlayerSettings:
   disableDepthAndStencilBuffers: 0
   androidStartInFullscreen: 1
   androidRenderOutsideSafeArea: 1
-  androidBlitType: 1
+  androidBlitType: 0
   defaultIsNativeResolution: 1
   macRetinaSupport: 1
   runInBackground: 1

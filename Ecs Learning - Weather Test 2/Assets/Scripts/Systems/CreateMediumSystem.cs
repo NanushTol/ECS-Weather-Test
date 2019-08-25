@@ -45,7 +45,7 @@ public class CreateMediumSystem : ComponentSystem
         //manager.CellEntities = CellEntities;
         manager.CellsCount = CellEntities.Length;
 
-        CellEntities.Dispose();
+        //CellEntities.Dispose();
     }
 
     public struct GetAdjacentCellIDJob : IJobForEach<Cell, Translation>
@@ -124,9 +124,6 @@ public class CreateMediumSystem : ComponentSystem
                     {
                         EntityManager.SetComponentData(cell, new Temperature { Value = 100f });
                     }
-                    //UnityEngine.Random.Range(1f, 10f) 
-
-                    //EntityManager.SetComponentData(cell, new ToTransfer { });
 
                     EntityManager.SetComponentData(cell, new Translation
                     {
@@ -138,7 +135,7 @@ public class CreateMediumSystem : ComponentSystem
 
                     CellEntities.TryAdd(count, cell);
 
-                    EntityManager.SetName(cell, "cell " + count);
+                    //EntityManager.SetName(cell, "cell " + count);
 
                     count++;
                 }
@@ -154,7 +151,7 @@ public class CreateMediumSystem : ComponentSystem
                         (0, -50f, 0)
             });
             CellEntities.TryAdd(-1, dummy);
-            EntityManager.SetName(dummy, "Dummy");
+            //EntityManager.SetName(dummy, "Dummy");
 
 
             EntityManager.DestroyEntity(entity);
@@ -166,8 +163,8 @@ public class CreateMediumSystem : ComponentSystem
     {
     }
 
-    protected override void OnDestroy()
+    protected override void OnStopRunning()
     {
-        //manager.CellEntities.Dispose();
+        CellEntities.Dispose();
     }
 }
