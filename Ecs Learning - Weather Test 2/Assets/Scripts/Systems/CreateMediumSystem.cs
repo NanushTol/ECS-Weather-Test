@@ -121,13 +121,13 @@ public class CreateMediumSystem : ComponentSystem
                     EntityManager.SetComponentData(cell, new Cell { ID = count , Coordinates = new int2(x,y)});
 
                     EntityManager.SetComponentData(cell, new Water { Value = 0 });
-                    EntityManager.SetComponentData(cell, new Co2 { Value = 0 });
+                    EntityManager.SetComponentData(cell, new Co2 { Value = 20 });
                     EntityManager.SetComponentData(cell, new Oxygen { Value = 0 });
                     EntityManager.SetComponentData(cell, new Temperature { Value = 20f});
-                    if(x == _mapSize.x / 2 && y == _mapSize.y / 2)
-                    {
-                        EntityManager.SetComponentData(cell, new Temperature { Value = -30f });
-                    }
+                    //if(x == _mapSize.x / 2 && y == _mapSize.y / 2)
+                    //{
+                    //    EntityManager.SetComponentData(cell, new Temperature { Value = -30f });
+                    //}
 
                     EntityManager.SetComponentData(cell, new Translation
                     {

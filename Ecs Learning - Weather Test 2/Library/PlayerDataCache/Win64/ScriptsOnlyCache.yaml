@@ -19,8 +19,6 @@ ScriptsOnlyBuild:
     - Unity.Entities.ConvertToEntity
     - Unity.Entities.GameObjectEntity
     - Unity.Entities.PlayerLoopDisableManager
-    UnityEditor.TestRunner.dll:
-    - UnityEditor.TestTools.TestRunner.TestListCacheData
   sceneClasses:
     Assets/Scenes/Weather Test.unity:
     - Class: 1
@@ -360,6 +358,18 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Transforms.Hybrid.dll
     namespaceName: Unity.Transforms
     className: CopyTransformToGameObjectProxy
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: UnityEngine.Advertisements.dll
+    namespaceName: UnityEngine.Advertisements
+    className: CallbackExecutor
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: UnityEngine.Advertisements.dll
+    namespaceName: UnityEngine.Advertisements.Editor
+    className: Placeholder
   - hash:
       serializedVersion: 2
       Hash: 10ce8338bd6c1531f7460b0d31d4d767
@@ -933,5 +943,5 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/Weather Test.unity
-  playerPath: D:/Projects 2019/My Games/Builds/Weahter Test Build/03/Ecs Learning
-    - Weather Test 2.exe
+  playerPath: D:/Projects 2019/My Games/Builds/Weahter Test Build/Win 64 Development
+    Build/Ecs Learning - Weather Test 2.exe

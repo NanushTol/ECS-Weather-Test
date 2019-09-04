@@ -247,34 +247,45 @@ public class WindSystem : JobComponentSystem
 
             if (adjacentId != -1)
             {
-                float transfer;
-                float cont;
+                float heatTransfer;
+                float contTransfer;
+                float temperatureCont;
                 if (TempContent[adjacentId] == 0)   
                 {
-                    cont = 0.001f;
+                    temperatureCont = 0.001f;
                 }
                 else
                 {
-                    cont = TempContent[adjacentId];
+                    temperatureCont = TempContent[adjacentId];
                 }
 
-                if (cellId == 55 || cellId == 54)
-                {
 
-                }
-
-                transfer = (motionAxisValue / math.abs(cont)) * HeatTransferRatio * Dt;
+                //transfer = (motionAxisValue / math.abs(cont)) * HeatTransferRatio * Dt;
+                heatTransfer = (motionAxisValue / math.abs(temperatureCont)) * HeatTransferRatio * Dt;
 
                 // Transfer To Self
-                if (temp.Value + transfer > -273f)
+                if (temp.Value + heatTransfer > -273f)
                 {
-                    temp.Value += transfer;
+                    temp.Value += heatTransfer;
 
                     //Transfer To Adjacent Cell
-                    receivedElement.cellID = cellId;
-                    receivedElement.TemperatureReceived = -transfer;
-                    buffer.Add(receivedElement);
+                    receivedElement.TemperatureReceived = -heatTransfer;
+                    
                 }
+
+
+                contTransfer = motionAxisValue * Co2Content[adjacentId] * Dt * 0.1f;
+                if (co2.Value + contTransfer > 0 && Co2Content[adjacentId] - contTransfer > 0)
+                {
+                    co2.Value += contTransfer;
+
+                    //Transfer To Adjacent Cell
+                    receivedElement.Co2Received = -contTransfer;
+                }
+                receivedElement.cellID = cellId;
+                buffer.Add(receivedElement);
+
+                //(motionAxisValue * ContentTransferRatio) * adjacentCell.Content[c]
             }
         }
     }

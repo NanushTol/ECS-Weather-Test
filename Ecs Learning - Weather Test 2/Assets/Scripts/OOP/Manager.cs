@@ -12,7 +12,9 @@ public class Manager : MonoBehaviour
     public int MapHeight;
     public Material WeatherMat;
     public Gradient TemperatureColors;
-    public GameObject Display;
+    public Gradient Co2Colors;
+    public GameObject TemperatureDisplay;
+    public GameObject Co2Display;
     public GameObject Floor;
     public ParticleSystem Particles;
     public ParticleSystemForceField ParticlesFF;
@@ -38,7 +40,10 @@ public class Manager : MonoBehaviour
 
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))   
+        {
+            Application.Quit();
+        }
     }
 
 }
